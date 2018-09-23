@@ -1,0 +1,12 @@
+{
+    "name": "speckvisit/speckvisit",
+    "description": "A modular framework implementing specification visitor",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Speckvisit\\Specification": "src/Specification/"
+        }
+    },
+    "require": {}
+}
