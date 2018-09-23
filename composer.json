@@ -5,8 +5,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Speckvisit\\Specification": "src/Specification/"
-            "Speckvisit\\Crud": "src/Crud/"
+            "Speckvisit\\Specification\\": "src/Specification/"
+            "Speckvisit\\Crud\\": "src/Crud/"
         }
     },
     "require": {}
