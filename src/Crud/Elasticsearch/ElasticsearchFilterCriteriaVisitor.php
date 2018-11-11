@@ -1,6 +1,5 @@
 <?php
-
-namespace PhpCrudElastic;
+namespace Speckvisit\Crud\Elasticsearch;
 
 
 class ElasticsearchFilterCriteriaVisitor

@@ -1,5 +1,5 @@
 <?php
-namespace PhpCrudMongo;
+namespace Speckvisit\Crud\MongoDb;
 
 
 class EntityIterator implements \Iterator {

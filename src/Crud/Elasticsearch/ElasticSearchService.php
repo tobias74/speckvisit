@@ -1,5 +1,5 @@
 <?php
-namespace PhpCrudElastic;
+namespace Speckvisit\Crud\Elasticsearch;
 
 class ElasticSearchService
 {
@@ -53,7 +53,7 @@ class ElasticSearchService
         
         $combinedWords = array_merge(array_diff($entityWords, ['And','Or']));
 
-        $criteriaMaker = new \PhpVisitableSpecification\CriteriaMaker();
+        $criteriaMaker = new \Speckvisit\Specification\CriteriaMaker();
         foreach ($combinedWords as $index => $entityWord)
         {
             if (!isset($criteria))

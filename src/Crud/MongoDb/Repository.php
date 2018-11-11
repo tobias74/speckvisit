@@ -1,5 +1,5 @@
 <?php
-namespace PhpCrudMongo;
+namespace Speckvisit\Crud\MongoDb;
 
 
 class Repository
@@ -53,7 +53,7 @@ class Repository
         
         $combinedWords = array_merge(array_diff($entityWords, ['And','Or']));
 
-        $criteriaMaker = new \PhpVisitableSpecification\CriteriaMaker();
+        $criteriaMaker = new \Speckvisit\Specification\CriteriaMaker();
         foreach ($combinedWords as $index => $entityWord)
         {
             if (!isset($criteria))
@@ -188,7 +188,7 @@ class Repository
     {
         return $this->getOneByIdAndId($entityId, $entityId);
         
-        $criteriaMaker = new \PhpVisitableSpecification\CriteriaMaker();
+        $criteriaMaker = new \Speckvisit\Specification\CriteriaMaker();
         $criteria = $criteriaMaker->hasId($entityId);
         return $this->getOneBySpecification($criteria);
     }

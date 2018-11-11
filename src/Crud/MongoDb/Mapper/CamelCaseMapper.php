@@ -1,5 +1,5 @@
 <?php
-namespace PhpCrudMongo\Mapper;
+namespace Speckvisit\Crud\MongoDb\Mapper;
 
 
 class CamelCaseMapper extends AbstractMapper

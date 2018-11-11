@@ -1,5 +1,5 @@
 <?php 
-namespace PhpVisitableSpecification;
+namespace Speckvisit\Specification;
 
 
 class WithinBoundingBoxCriteria extends AbstractCriteria

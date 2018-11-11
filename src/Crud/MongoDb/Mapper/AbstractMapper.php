@@ -1,5 +1,5 @@
 <?php
-namespace PhpCrudMongo\Mapper;
+namespace Speckvisit\Crud\MongoDb\Mapper;
 
 
 abstract class AbstractMapper
