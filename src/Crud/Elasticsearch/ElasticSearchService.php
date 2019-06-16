@@ -140,11 +140,6 @@ class ElasticSearchService
     return $this->getMapper()->getIndexName();
   }
 
-  public function getTypeName()
-  {
-    return $this->getMapper()->getTypeName();
-  }
-
   protected function mapEntityToHash($station)
   {
     return $this->getMapper()->mapEntityToHash($station);
@@ -156,7 +151,6 @@ class ElasticSearchService
     $params = array();
     $params['body']  = $this->mapEntityToHash($entity);;
     $params['index'] = $this->getIndexName();
-    $params['type']  = $this->getTypeName();
     $params['id']    = $entity->getId();
     //$params['client']['future'] = 'lazy';
 
@@ -185,7 +179,6 @@ class ElasticSearchService
     $params = array();
     $params['body']  = $body;
     $params['index'] = $this->getIndexName()."_percolator";
-    $params['type']  = $this->getTypeName();
 
     $returnValue = $this->getClient()->index($params);
 
@@ -206,7 +199,6 @@ class ElasticSearchService
 
     $params = array();
     $params['index'] = $this->getIndexName()."_percolator";
-    $params['type'] = $this->getTypeName();
     $params['body'] = $body;
     $responseArray = $this->getClient()->search($params);
     
@@ -220,7 +212,6 @@ class ElasticSearchService
   {
     $deleteParams = array();
     $deleteParams['index'] = $this->getIndexName();
-    $deleteParams['type'] = $this->getTypeName();
     $deleteParams['id'] = $entity->getId();
     $deleteParams['refresh'] = true;
     $retDelete = $this->getClient()->delete($deleteParams);
@@ -263,7 +254,6 @@ class ElasticSearchService
 
 	  $params = array();
 	  $params['index'] = $this->getIndexName();
-	  $params['type'] = $this->getTypeName();
 	  $params['body'] = $query;
     
     return $params;
@@ -327,7 +317,6 @@ class ElasticSearchService
 
 	  $params = array();
 	  $params['index'] = $this->getIndexName();
-	  $params['type'] = $this->getTypeName();
 	  $params['body'] = $query;
     
     
@@ -389,21 +378,18 @@ class ElasticSearchService
 
     $query = array();
     $query['aggs'] = [
-      $this->getTypeName() => [
-        "filter" => $filter,
-        "aggs" => [
-          "myAggName" => [
-            $aggregation['type'] => $aggregationHash
-          ]
+      "filter" => $filter,
+      "aggs" => [
+        "myAggName" => [
+          $aggregation['type'] => $aggregationHash
         ]
       ]
     ];
     $params = array();
     $params['index'] = $this->getIndexName();
-    $params['type'] = $this->getTypeName();
     $params['body'] = $query;
     $responseArray = $this->getClient()->search($params);
-    return $responseArray['aggregations'][$this->getTypeName()]['myAggName'];
+    return $responseArray['aggregations']['myAggName'];
   }
 
 
@@ -419,7 +405,6 @@ class ElasticSearchService
     
     $params = array();
     $params['index'] = $this->getIndexName();
-    $params['type'] = $this->getTypeName();
     $params['body'] = $query;
     
     error_log(json_encode($params));
@@ -437,17 +422,14 @@ class ElasticSearchService
     
     $query = array();
     $query['aggs'] = [
-      $this->getTypeName() => [
-        "filter" => $filter,
-        "aggs" => $aggregation
-      ]
+      "filter" => $filter,
+      "aggs" => $aggregation
     ];
     $params = array();
     $params['index'] = $this->getIndexName();
-    $params['type'] = $this->getTypeName();
     $params['body'] = $query;
     $responseArray = $this->getClient()->search($params);
-    return $responseArray['aggregations'][$this->getTypeName()];
+    return $responseArray['aggregations'];
   }
 
   public function getColumnForField($field)
