@@ -6,6 +6,9 @@
     "autoload": {
         "psr-4": {
             "Speckvisit\\Specification\\": "src/Specification/",
+            "Speckvisit\\Parser\\": "src/Parser/",
+            "Speckvisit\\Query\\": "src/Query/",
+            "Speckvisit\\Scanner\\": "src/Scanner/",
             "Speckvisit\\Crud\\": "src/Crud/"
         }
     },
