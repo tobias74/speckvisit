@@ -378,18 +378,21 @@ class ElasticSearchService
 
     $query = array();
     $query['aggs'] = [
-      "filter" => $filter,
-      "aggs" => [
-        "myAggName" => [
-          $aggregation['type'] => $aggregationHash
+      "myAggWrapper" => [
+        "filter" => $filter,
+        "aggs" => [
+          "myAggName" => [
+            $aggregation['type'] => $aggregationHash
+          ]
         ]
       ]
     ];
     $params = array();
     $params['index'] = $this->getIndexName();
     $params['body'] = $query;
+    
     $responseArray = $this->getClient()->search($params);
-    return $responseArray['aggregations']['myAggName'];
+    return $responseArray['aggregations']['myAggWrapper']['myAggName'];
   }
 
 
