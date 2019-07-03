@@ -132,6 +132,16 @@ class Repository
         return $this->getConfig()['mongoDbName'];
     }
     
+    public function instantiateAll($documents)
+    {
+        $entities = [];
+        foreach ($documents as $document)
+        {
+            $entities[] = $this->instantiate($document);
+        }
+        return $entities;
+    }
+    
     protected function instantiate($document)
     {
         return $this->getMapper()->instantiate($document);
