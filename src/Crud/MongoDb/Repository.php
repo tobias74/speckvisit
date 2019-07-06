@@ -56,14 +56,16 @@ class Repository
         $criteriaMaker = new \Speckvisit\Specification\CriteriaMaker();
         foreach ($combinedWords as $index => $entityWord)
         {
+            $criteriaPart = $criteriaMaker->equals(lcfirst($combinedWords[$index]), $arguments[$index]);
+            
             if (!isset($criteria))
             {
-                $criteria = $criteriaMaker->equals(lcfirst($combinedWords[$index]), $arguments[$index]);
+                $criteria = $criteriaPart;
             }
             else
             {
                 $command = 'logical'.$operation;
-                $criteria = $criteria->$command( $criteriaMaker->equals(lcfirst($combinedWords[$index]), $arguments[$index]) );
+                $criteria = $criteria->$command( $criteriaPart );
             }
         }
         

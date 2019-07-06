@@ -52,6 +52,16 @@ class MongoWhereArray
     $this->setArrayForCriteria($criteria, $comp);
   }
   
+  public function visitInCriteria($criteria)
+  {
+    $column = $this->getMapper()->getColumnForField($criteria->getField());
+    $comp = array($column => array(
+      '$in' => $criteria->getValue()
+      )
+    );
+    $this->setArrayForCriteria($criteria, $comp);
+  }
+  
       
   public function visitGreaterThanCriteria($criteria)
   {

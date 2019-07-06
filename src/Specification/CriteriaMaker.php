@@ -14,6 +14,11 @@ class CriteriaMaker
     {
         return new EqualCriteria($field,$value);
     }
+
+    public function in($field,$value)
+    {
+        return new InCriteria($field,$value);
+    }
     
     public function without($field,$value)
     {
@@ -30,7 +35,7 @@ class CriteriaMaker
         return new LessThanCriteria($field,$value);
     }
 
-    final public function greaterOrEqual($field,$value)
+    public function greaterOrEqual($field,$value)
     {
         return new GreaterOrEqualCriteria($field,$value);
     }
@@ -75,13 +80,6 @@ class CriteriaMaker
       return new NotNullCriteria($field);  
     }
     
-    /*
-    public function isAssociatedWith($field,$value)
-    {
-      return new AssociationCriteria($field,$value);
-    }
-    */
-    
     public function any()
     {
         return new AnyCriteria();
@@ -98,20 +96,5 @@ class CriteriaMaker
         return $this->equals('id',$id);
     }
     
-   
-    public function belongsToUser($userId)
-    {
-        return $this->equals('userId',$userId);
-    }
-    
-    public function belongsToUserId($userId)
-    {
-        return $this->equals('userId',$userId);
-    }
-        
-    public function withoutOwner($userId)
-    {
-        return $this->without('userId',$userId);
-    }
-    
+
 }
