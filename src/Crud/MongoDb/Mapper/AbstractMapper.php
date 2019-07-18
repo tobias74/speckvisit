@@ -1,6 +1,6 @@
 <?php
-namespace Speckvisit\Crud\MongoDb\Mapper;
 
+namespace Speckvisit\Crud\MongoDb\Mapper;
 
 abstract class AbstractMapper
 {
@@ -19,7 +19,7 @@ abstract class AbstractMapper
     {
         return $this->collectionName;
     }
-    
+
     protected function produceEntity()
     {
         return $this->entityProvider->provide();
@@ -29,50 +29,53 @@ abstract class AbstractMapper
     {
         return $this->propertyList;
     }
-    
+
     public function getColumnForField($fieldName)
     {
         $map = $this->getMap();
+
         return $map[lcfirst($fieldName)];
     }
 
     public function instantiate($document)
     {
-        $resultHash = json_decode(\MongoDB\BSON\toJSON(\MongoDB\BSON\fromPHP($document)),true);
+        $resultHash = json_decode(\MongoDB\BSON\toJSON(\MongoDB\BSON\fromPHP($document)), true);
         $entity = $this->produceEntity();
+        $reflectionClass = new \ReflectionClass($entity);
 
-        foreach ($this->getPropertyList() as $property)
-        {
-            $command = "set".ucfirst($property);
-            if (isset($resultHash[ $this->transformPropertyName($property) ]))
-            {
-                $entity->$command($resultHash[ $this->transformPropertyName($property) ]);  
+        foreach ($this->getPropertyList() as $property) {
+            if (isset($resultHash[$this->transformPropertyName($property)])) {
+                $reflectionProperty = $reflectionClass->getProperty($property);
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($entity, $resultHash[$this->transformPropertyName($property)]);
             }
         }
+
         return $entity;
     }
-    
+
     public function mapToDocument($entity)
     {
+        $reflectionClass = new \ReflectionClass($entity);
+
         $document = array();
-        foreach ($this->getPropertyList() as $property)
-        {
-            $command = "get".ucfirst($property);
-            $document[ $this->transformPropertyName($property) ] = $entity->$command();  
+        foreach ($this->getPropertyList() as $property) {
+            $reflectionProperty = $reflectionClass->getProperty($property);
+            $reflectionProperty->setAccessible(true);
+
+            $document[$this->transformPropertyName($property)] = $reflectionProperty->getValue($reflectionClass);
         }
+
         return $document;
     }
 
     protected function getMap()
     {
         $map = array();
-        foreach ($this->getPropertyList() as $property)
-        {
-            $map[ $property ] = $this->transformPropertyName($property); 
+        foreach ($this->getPropertyList() as $property) {
+            $map[$property] = $this->transformPropertyName($property);
         }
+
         return $map;
     }
-
-
-
 }
