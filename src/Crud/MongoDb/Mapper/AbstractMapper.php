@@ -62,8 +62,7 @@ abstract class AbstractMapper
         foreach ($this->getPropertyList() as $property) {
             $reflectionProperty = $reflectionClass->getProperty($property);
             $reflectionProperty->setAccessible(true);
-
-            $document[$this->transformPropertyName($property)] = $reflectionProperty->getValue($reflectionClass);
+            $document[$this->transformPropertyName($property)] = $reflectionProperty->getValue($entity);
         }
 
         return $document;
