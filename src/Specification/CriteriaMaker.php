@@ -1,53 +1,52 @@
 <?php
+
 namespace Speckvisit\Specification;
 
 class CriteriaMaker
 {
-   
-    public function matches($field,$value)
+    public function equals($field, $value)
     {
-      throw new \ErrorException('dont use matches anymore.');
-      //return new ComparisonCriteria("LIKE",$field,$value);
-    }
-    
-    public function equals($field,$value)
-    {
-        return new EqualCriteria($field,$value);
+        return new EqualCriteria($field, $value);
     }
 
-    public function in($field,$value)
+    public function matches($field, $value)
     {
-        return new InCriteria($field,$value);
-    }
-    
-    public function without($field,$value)
-    {
-        return new NotEqualCriteria($field,$value);
-    }
-    
-    public function greaterThan($field,$value)
-    {
-        return new GreaterThanCriteria($field,$value);
+        return new MatchCriteria($field, $value);
     }
 
-    public function lessThan($field,$value)
+    public function in($field, $value)
     {
-        return new LessThanCriteria($field,$value);
+        return new InCriteria($field, $value);
     }
 
-    public function greaterOrEqual($field,$value)
+    public function without($field, $value)
     {
-        return new GreaterOrEqualCriteria($field,$value);
+        return new NotEqualCriteria($field, $value);
     }
 
-    public function lessOrEqual($field,$value)
+    public function greaterThan($field, $value)
     {
-        return new LessOrEqualCriteria($field,$value);
+        return new GreaterThanCriteria($field, $value);
     }
 
-    public function between($field,$start,$end)
+    public function lessThan($field, $value)
     {
-        return new CriteriaBetween($field,$start,$end);
+        return new LessThanCriteria($field, $value);
+    }
+
+    public function greaterOrEqual($field, $value)
+    {
+        return new GreaterOrEqualCriteria($field, $value);
+    }
+
+    public function lessOrEqual($field, $value)
+    {
+        return new LessOrEqualCriteria($field, $value);
+    }
+
+    public function between($field, $start, $end)
+    {
+        return new CriteriaBetween($field, $start, $end);
     }
 
     public function withinDistance($fieldName, $pointOfInterest, $maximumDistance)
@@ -69,17 +68,17 @@ class CriteriaMaker
     {
         return new GeoShapeCriteria($fieldName, $shapeDefinition);
     }
-    
+
     public function isNotNull($field)
     {
-      return new NotNullCriteria($field);  
+        return new NotNullCriteria($field);
     }
-    
+
     public function notNull($field)
     {
-      return new NotNullCriteria($field);  
+        return new NotNullCriteria($field);
     }
-    
+
     public function any()
     {
         return new AnyCriteria();
@@ -88,13 +87,11 @@ class CriteriaMaker
 
     public function none()
     {
-        return $this->equals('id',-1);
+        return $this->equals('id', -1);
     }
-    
+
     public function hasId($id)
     {
-        return $this->equals('id',$id);
+        return $this->equals('id', $id);
     }
-    
-
 }
