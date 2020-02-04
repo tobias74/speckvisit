@@ -14,6 +14,11 @@ class CriteriaMaker
         return new MatchCriteria($field, $value);
     }
 
+    public function simpleQueryString($field, $value)
+    {
+        return new SimpleQueryStringCriteria($field, $value);
+    }
+
     public function in($field, $value)
     {
         return new InCriteria($field, $value);

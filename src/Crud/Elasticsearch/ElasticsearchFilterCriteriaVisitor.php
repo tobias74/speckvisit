@@ -62,6 +62,17 @@ class ElasticsearchFilterCriteriaVisitor
         $this->setArrayForCriteria($criteria, $comp);
     }
 
+    public function visitSimpleQueryStringCriteria($criteria)
+    {
+        $column = $this->getMapper()->getColumnForField($criteria->getField());
+        $comp = array('simple_query_string' => array(
+            'query' => $criteria->getValue(),
+            'fields' => [$column],
+            'default_operator' => 'and',
+        ));
+        $this->setArrayForCriteria($criteria, $comp);
+    }
+
     public function visitEqualCriteria($criteria)
     {
         $column = $this->getMapper()->getColumnForField($criteria->getField());
