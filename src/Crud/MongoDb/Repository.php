@@ -48,11 +48,13 @@ class Repository
 
         $criteriaMaker = new \Speckvisit\Specification\CriteriaMaker();
         foreach ($combinedWords as $index => $entityWord) {
+            $criteriaPart = $criteriaMaker->equals(lcfirst($combinedWords[$index]), $arguments[$index]);
+
             if (!isset($criteria)) {
-                $criteria = $criteriaMaker->equals(lcfirst($combinedWords[$index]), $arguments[$index]);
+                $criteria = $criteriaPart;
             } else {
                 $command = 'logical'.$operation;
-                $criteria = $criteria->$command($criteriaMaker->equals(lcfirst($combinedWords[$index]), $arguments[$index]));
+                $criteria = $criteria->$command($criteriaPart);
             }
         }
 
@@ -126,6 +128,16 @@ class Repository
     protected function instantiate($document)
     {
         return $this->getMapper()->instantiate($document);
+    }
+
+    public function instantiateAll($documents)
+    {
+        $entities = [];
+        foreach ($documents as $document) {
+            $entities[] = $this->instantiate($document);
+        }
+
+        return $entities;
     }
 
     protected function mapToDocument($entity)
@@ -202,7 +214,7 @@ class Repository
     {
         $document = $this->getCollection()->findOne($this->getWhereArray($criteria));
         if (!$document) {
-            throw new NoMatchException('not found in facade here...');
+            throw new NoMatchException('not found in repository here...'.print_r($criteria, true));
         }
 
         return $this->instantiate($document);
