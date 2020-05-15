@@ -104,6 +104,7 @@ class ElasticSearchService
 
         $clientBuilder = \Elasticsearch\ClientBuilder::create();
         $clientBuilder->setHosts($hosts);
+        $clientBuilder->setConnectionPool(\Elasticsearch\ConnectionPool\StaticConnectionPool::class);
         $client = $clientBuilder->build();
 
         return $client;
