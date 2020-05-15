@@ -379,15 +379,20 @@ class ElasticSearchService
 
         $query = array();
         $query['aggs'] = [
-      'filter' => $filter,
-      'aggs' => $aggregation,
-    ];
+            'my_agg' => [
+              'filter' => $filter,
+              'aggs' => $aggregation,
+            ],
+        ];
         $params = array();
         $params['index'] = $this->getIndexName();
         $params['body'] = $query;
+
+        error_log(json_encode($params));
+
         $responseArray = $this->getClient()->search($params);
 
-        return $responseArray['aggregations'];
+        return $responseArray['aggregations']['my_agg'];
     }
 
     public function getColumnForField($field)
