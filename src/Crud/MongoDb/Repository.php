@@ -48,13 +48,11 @@ class Repository
 
         $criteriaMaker = new \Speckvisit\Specification\CriteriaMaker();
         foreach ($combinedWords as $index => $entityWord) {
-            $criteriaPart = $criteriaMaker->equals(lcfirst($combinedWords[$index]), $arguments[$index]);
-
             if (!isset($criteria)) {
-                $criteria = $criteriaPart;
+                $criteria = $criteriaMaker->equals(lcfirst($combinedWords[$index]), $arguments[$index]);
             } else {
                 $command = 'logical'.$operation;
-                $criteria = $criteria->$command($criteriaPart);
+                $criteria = $criteria->$command($criteriaMaker->equals(lcfirst($combinedWords[$index]), $arguments[$index]));
             }
         }
 
@@ -70,6 +68,11 @@ class Repository
             $criteria = $this->makeSpecification($entityWords, $arguments);
 
             return $this->getBySpecification($criteria);
+        } elseif ('exists' === $words[0]) {
+            $entityWords = $this->getEntityWords($words, 1);
+            $criteria = $this->makeSpecification($entityWords, $arguments);
+
+            return $this->existsBySpecification($criteria);
         } elseif (('get' === $words[0]) && ('One' === $words[1]) && ('By' === $words[2])) {
             $entityWords = $this->getEntityWords($words, 3);
             $criteria = $this->makeSpecification($entityWords, $arguments);
@@ -118,16 +121,6 @@ class Repository
     public function getMongoDbName()
     {
         return $this->getConfig()['mongoDbName'];
-    }
-
-    public function instantiateAll($documents)
-    {
-        $entities = [];
-        foreach ($documents as $document) {
-            $entities[] = $this->instantiate($document);
-        }
-
-        return $entities;
     }
 
     protected function instantiate($document)
@@ -200,11 +193,16 @@ class Repository
         return $iterator;
     }
 
+    public function existsBySpecification($criteria)
+    {
+        return (bool) $this->getCollection()->findOne($this->getWhereArray($criteria));
+    }
+
     public function getOneBySpecification($criteria)
     {
         $document = $this->getCollection()->findOne($this->getWhereArray($criteria));
         if (!$document) {
-            throw new NoMatchException('not found in repository here...'.print_r($criteria, true));
+            throw new NoMatchException('not found in facade here...');
         }
 
         return $this->instantiate($document);
