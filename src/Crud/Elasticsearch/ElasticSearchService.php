@@ -234,46 +234,16 @@ class ElasticSearchService
 
     protected function getSearchParams($elasticSpec)
     {
-        if (isset($elasticSpec['sorting'])) {
-            $sorting = $elasticSpec['sorting'];
-
-            if ('byDistanceToPin' === $sorting['sortType']) {
-                $sort = array(
-          '_geo_distance' => array(
-              $sorting['sortField'] => array(
-              'lat' => floatval($sorting['latitude']),
-              'lon' => floatval($sorting['longitude']),
-          ),
-            'order' => 'asc',
-            'unit' => 'km',
-          ),
-          'id' => array(
-          'order' => 'asc',
-          ),
-        );
-            } elseif ('byField' === $sorting['sortType']) {
-                $sort = array(
-          $sorting['sortField'] => $sorting['sortOrder'],
-          'id' => 'asc',
-        );
-            } else {
-                $sort = array(
-          'id' => 'asc',
-        );
-            }
-        } else {
-            $sort = array();
-        }
-
         $from = $elasticSpec['offset'];
         $size = $elasticSpec['limit'];
+        $sort = $elasticSpec['sort'];
 
         $query = array(
-      'query' => $this->getFilter($elasticSpec['criteria']),
-      'sort' => $sort,
-      'from' => $from,
-      'size' => $size,
-    );
+          'query' => $this->getFilter($elasticSpec['criteria']),
+          'sort' => $sort,
+          'from' => $from,
+          'size' => $size,
+        );
 
         if (isset($elasticSpec['search_after'])) {
             $query['search_after'] = $elasticSpec['search_after'];
@@ -289,9 +259,12 @@ class ElasticSearchService
     public function getBySpecification($elasticSpec)
     {
         $params = $this->getSearchParams($elasticSpec);
-        //echo json_encode($params);
-        //die();
-        $responseArray = $this->getClient()->search($params);
+        try {
+            $responseArray = $this->getClient()->search($params);
+        } catch (\Elasticsearch\Common\Exceptions\BadRequest400Exception $e) {
+            echo json_encode($params);
+            die();
+        }
 
         $finalResponse = array();
 
