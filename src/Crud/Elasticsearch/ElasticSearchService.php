@@ -234,16 +234,21 @@ class ElasticSearchService
 
     protected function getSearchParams($elasticSpec)
     {
-        $from = $elasticSpec['offset'];
-        $size = $elasticSpec['limit'];
-        $sort = $elasticSpec['sort'];
-
         $query = array(
           'query' => $this->getFilter($elasticSpec['criteria']),
-          'sort' => $sort,
-          'from' => $from,
-          'size' => $size,
         );
+
+        if (isset($elasticSpec['offset'])) {
+            $query['from'] = $elasticSpec['offset'];
+        }
+
+        if (isset($elasticSpec['limit'])) {
+            $query['size'] = $elasticSpec['limit'];
+        }
+
+        if (isset($elasticSpec['sort'])) {
+            $query['sort'] = $elasticSpec['sort'];
+        }
 
         if (isset($elasticSpec['search_after'])) {
             $query['search_after'] = $elasticSpec['search_after'];
