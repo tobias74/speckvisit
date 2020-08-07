@@ -70,6 +70,11 @@ class Repository
             $criteria = $this->makeSpecification($entityWords, $arguments);
 
             return $this->getBySpecification($criteria);
+        } elseif ('exists' === $words[0]) {
+            $entityWords = $this->getEntityWords($words, 1);
+            $criteria = $this->makeSpecification($entityWords, $arguments);
+
+            return $this->existsBySpecification($criteria);
         } elseif (('get' === $words[0]) && ('One' === $words[1]) && ('By' === $words[2])) {
             $entityWords = $this->getEntityWords($words, 3);
             $criteria = $this->makeSpecification($entityWords, $arguments);
@@ -120,6 +125,11 @@ class Repository
         return $this->getConfig()['mongoDbName'];
     }
 
+    protected function instantiate($document)
+    {
+        return $this->getMapper()->instantiate($document);
+    }
+
     public function instantiateAll($documents)
     {
         $entities = [];
@@ -128,11 +138,6 @@ class Repository
         }
 
         return $entities;
-    }
-
-    protected function instantiate($document)
-    {
-        return $this->getMapper()->instantiate($document);
     }
 
     protected function mapToDocument($entity)
@@ -198,6 +203,11 @@ class Repository
         $iterator = new EntityIterator($mongoCursor, $this->getMapper());
 
         return $iterator;
+    }
+
+    public function existsBySpecification($criteria)
+    {
+        return (bool) $this->getCollection()->findOne($this->getWhereArray($criteria));
     }
 
     public function getOneBySpecification($criteria)

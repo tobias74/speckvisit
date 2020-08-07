@@ -104,6 +104,7 @@ class ElasticSearchService
 
         $clientBuilder = \Elasticsearch\ClientBuilder::create();
         $clientBuilder->setHosts($hosts);
+        $clientBuilder->setConnectionPool(\Elasticsearch\ConnectionPool\StaticConnectionPool::class);
         $client = $clientBuilder->build();
 
         return $client;
@@ -234,16 +235,21 @@ class ElasticSearchService
 
     protected function getSearchParams($elasticSpec)
     {
-        $from = $elasticSpec['offset'];
-        $size = $elasticSpec['limit'];
-        $sort = $elasticSpec['sort'];
-
         $query = array(
           'query' => $this->getFilter($elasticSpec['criteria']),
-          'sort' => $sort,
-          'from' => $from,
-          'size' => $size,
         );
+
+        if (isset($elasticSpec['offset'])) {
+            $query['from'] = $elasticSpec['offset'];
+        }
+
+        if (isset($elasticSpec['limit'])) {
+            $query['size'] = $elasticSpec['limit'];
+        }
+
+        if (isset($elasticSpec['sort'])) {
+            $query['sort'] = $elasticSpec['sort'];
+        }
 
         if (isset($elasticSpec['search_after'])) {
             $query['search_after'] = $elasticSpec['search_after'];
@@ -353,15 +359,20 @@ class ElasticSearchService
 
         $query = array();
         $query['aggs'] = [
-      'filter' => $filter,
-      'aggs' => $aggregation,
-    ];
+            'my_agg' => [
+              'filter' => $filter,
+              'aggs' => $aggregation,
+            ],
+        ];
         $params = array();
         $params['index'] = $this->getIndexName();
         $params['body'] = $query;
+
+        error_log(json_encode($params));
+
         $responseArray = $this->getClient()->search($params);
 
-        return $responseArray['aggregations'];
+        return $responseArray['aggregations']['my_agg'];
     }
 
     public function getColumnForField($field)
