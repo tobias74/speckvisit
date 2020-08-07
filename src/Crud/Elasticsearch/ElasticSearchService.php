@@ -262,6 +262,7 @@ class ElasticSearchService
         try {
             $responseArray = $this->getClient()->search($params);
         } catch (\Elasticsearch\Common\Exceptions\BadRequest400Exception $e) {
+            $params['ERROR'] = 'There was a problem with this query!'.$e->getMessage();
             echo json_encode($params);
             die();
         }
