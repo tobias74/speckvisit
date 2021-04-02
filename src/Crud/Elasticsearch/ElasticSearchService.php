@@ -104,6 +104,7 @@ class ElasticSearchService
 
         $clientBuilder = \Elasticsearch\ClientBuilder::create();
         $clientBuilder->setHosts($hosts);
+        $clientBuilder->setConnectionPool(\Elasticsearch\ConnectionPool\StaticConnectionPool::class);
 
         if (isset($this->getConfig()['elasticSearchCloudId'])) {
             $clientBuilder->setElasticCloudId($this->getConfig()['elasticSearchCloudId']);
@@ -243,46 +244,21 @@ class ElasticSearchService
 
     protected function getSearchParams($elasticSpec)
     {
-        if (isset($elasticSpec['sorting'])) {
-            $sorting = $elasticSpec['sorting'];
+        $query = array(
+          'query' => $this->getFilter($elasticSpec['criteria']),
+        );
 
-            if ('byDistanceToPin' === $sorting['sortType']) {
-                $sort = array(
-          '_geo_distance' => array(
-              $sorting['sortField'] => array(
-              'lat' => floatval($sorting['latitude']),
-              'lon' => floatval($sorting['longitude']),
-          ),
-            'order' => 'asc',
-            'unit' => 'km',
-          ),
-          'id' => array(
-          'order' => 'asc',
-          ),
-        );
-            } elseif ('byField' === $sorting['sortType']) {
-                $sort = array(
-          $sorting['sortField'] => $sorting['sortOrder'],
-          'id' => 'asc',
-        );
-            } else {
-                $sort = array(
-          'id' => 'asc',
-        );
-            }
-        } else {
-            $sort = array();
+        if (isset($elasticSpec['offset'])) {
+            $query['from'] = $elasticSpec['offset'];
         }
 
-        $from = $elasticSpec['offset'];
-        $size = $elasticSpec['limit'];
+        if (isset($elasticSpec['limit'])) {
+            $query['size'] = $elasticSpec['limit'];
+        }
 
-        $query = array(
-      'query' => $this->getFilter($elasticSpec['criteria']),
-      'sort' => $sort,
-      'from' => $from,
-      'size' => $size,
-    );
+        if (isset($elasticSpec['sort'])) {
+            $query['sort'] = $elasticSpec['sort'];
+        }
 
         if (isset($elasticSpec['search_after'])) {
             $query['search_after'] = $elasticSpec['search_after'];
@@ -298,9 +274,13 @@ class ElasticSearchService
     public function getBySpecification($elasticSpec)
     {
         $params = $this->getSearchParams($elasticSpec);
-        //echo json_encode($params);
-        //die();
-        $responseArray = $this->getClient()->search($params);
+        try {
+            $responseArray = $this->getClient()->search($params);
+        } catch (\Elasticsearch\Common\Exceptions\BadRequest400Exception $e) {
+            $params['ERROR'] = 'There was a problem with this query!'.$e->getMessage();
+            echo json_encode($params);
+            die();
+        }
 
         $finalResponse = array();
 
@@ -388,15 +368,20 @@ class ElasticSearchService
 
         $query = array();
         $query['aggs'] = [
-      'filter' => $filter,
-      'aggs' => $aggregation,
-    ];
+            'my_agg' => [
+              'filter' => $filter,
+              'aggs' => $aggregation,
+            ],
+        ];
         $params = array();
         $params['index'] = $this->getIndexName();
         $params['body'] = $query;
+
+        error_log(json_encode($params));
+
         $responseArray = $this->getClient()->search($params);
 
-        return $responseArray['aggregations'];
+        return $responseArray['aggregations']['my_agg'];
     }
 
     public function getColumnForField($field)
