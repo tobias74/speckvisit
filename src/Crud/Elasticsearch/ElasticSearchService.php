@@ -99,11 +99,20 @@ class ElasticSearchService
     protected function getClient()
     {
         $hosts = [
-      $this->getConfig()['elasticSearchHost'],
-    ];
+          $this->getConfig()['elasticSearchHost'],
+        ];
 
         $clientBuilder = \Elasticsearch\ClientBuilder::create();
         $clientBuilder->setHosts($hosts);
+
+        if (isset($this->getConfig()['elasticSearchCloudId'])) {
+            $clientBuilder->setElasticCloudId($this->getConfig()['elasticSearchCloudId']);
+        }
+
+        if (isset($this->getConfig()['elasticSearchUserName'])) {
+            $clientBuilder->setBasicAuthentication($this->getConfig()['elasticSearchUserName'], $this->getConfig()['elasticSearchPassword']);
+        }
+
         $client = $clientBuilder->build();
 
         return $client;
