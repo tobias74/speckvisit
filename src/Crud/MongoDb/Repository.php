@@ -114,7 +114,7 @@ class Repository
     protected function getConnection()
     {
         if (!$this->connection) {
-            $this->connection = new \MongoDB\Client('mongodb://'.$this->getConfig()['mongoDbHost'].':27017');
+            $this->connection = new \MongoDB\Client($this->getConfig()['mongoDbHost']);
         }
 
         return $this->connection;
