@@ -141,6 +141,21 @@ class ElasticSearchService
         return $this->getMapper()->mapEntityToHash($station);
     }
 
+    public function bulkIndex($entities)
+    {
+        $params = ['body' => []];
+        foreach ($entities as $entity) {
+            $params['body'][] = [
+                'index' => [
+                    '_index' => $this->getIndexName(),
+                ],
+            ];
+            $params['body'][] = $this->mapEntityToHash($entity);
+        }
+
+        return $this->getClient()->bulk($params);
+    }
+
     public function indexEntityWithoutRefresh($entity)
     {
         $params = array();
