@@ -212,9 +212,10 @@ class Repository
 
     public function getOneBySpecification($criteria)
     {
-        $document = $this->getCollection()->findOne($this->getWhereArray($criteria));
+        $whereArray = $this->getWhereArray($criteria);
+        $document = $this->getCollection()->findOne($whereArray);
         if (!$document) {
-            throw new NoMatchException('not found in repository here...'.print_r($criteria, true));
+            throw new NoMatchException('not found in repository here...'.json_encode($whereArray));
         }
 
         return $this->instantiate($document);
