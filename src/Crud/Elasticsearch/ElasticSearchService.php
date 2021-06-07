@@ -148,6 +148,7 @@ class ElasticSearchService
             $params['body'][] = [
                 'index' => [
                     '_index' => $this->getIndexName(),
+                    '_id' => $entity->getId(),
                 ],
             ];
             $params['body'][] = $this->mapEntityToHash($entity);
@@ -174,16 +175,16 @@ class ElasticSearchService
         $this->indexEntityWithoutRefresh($entity);
 
         $this->getClient()->indices()->refresh(array(
-      'index' => $this->getIndexName(),
-    ));
+          'index' => $this->getIndexName(),
+        ));
     }
 
     public function indexQuery($criteria, $meta)
     {
         $body = array(
-      'query' => $this->getFilter($criteria),
-      'meta' => $meta,
-    );
+          'query' => $this->getFilter($criteria),
+          'meta' => $meta,
+        );
 
         $params = array();
         $params['body'] = $body;
@@ -196,13 +197,13 @@ class ElasticSearchService
     {
         $hash = $this->mapEntityToHash($entity);
         $body = array(
-      'query' => array(
-        'percolate' => array(
-            'field' => 'query',
-            'document' => $hash,
-        ),
-      ),
-    );
+          'query' => array(
+            'percolate' => array(
+                'field' => 'query',
+                'document' => $hash,
+            ),
+          ),
+        );
 
         $params = array();
         $params['index'] = $this->getIndexName().'_percolator';
@@ -219,6 +220,15 @@ class ElasticSearchService
         $deleteParams = array();
         $deleteParams['index'] = $this->getIndexName();
         $deleteParams['id'] = $entity->getId();
+        $deleteParams['refresh'] = true;
+        $retDelete = $this->getClient()->delete($deleteParams);
+    }
+
+    public function deleteEntityById($entityId)
+    {
+        $deleteParams = array();
+        $deleteParams['index'] = $this->getIndexName();
+        $deleteParams['id'] = $entityId;
         $deleteParams['refresh'] = true;
         $retDelete = $this->getClient()->delete($deleteParams);
     }
@@ -247,8 +257,8 @@ class ElasticSearchService
     protected function getDeleteParams($elasticSpec)
     {
         $query = array(
-      'query' => $this->getFilter($elasticSpec['criteria']),
-    );
+          'query' => $this->getFilter($elasticSpec['criteria']),
+        );
 
         $params = array();
         $params['index'] = $this->getIndexName();
@@ -327,8 +337,8 @@ class ElasticSearchService
         $filter = $criteriaVisitor->getArrayForCriteria($criteria);
 
         $aggregationHash = [
-      'field' => $this->getMapper()->getColumnForField($aggregation['field']),
-    ];
+          'field' => $this->getMapper()->getColumnForField($aggregation['field']),
+        ];
 
         if (isset($aggregation['size'])) {
             $aggregationHash['size'] = $aggregation['size'];
@@ -336,15 +346,15 @@ class ElasticSearchService
 
         $query = array();
         $query['aggs'] = [
-      'myAggWrapper' => [
-        'filter' => $filter,
-        'aggs' => [
-          'myAggName' => [
-            $aggregation['type'] => $aggregationHash,
+          'myAggWrapper' => [
+            'filter' => $filter,
+            'aggs' => [
+              'myAggName' => [
+                $aggregation['type'] => $aggregationHash,
+              ],
+            ],
           ],
-        ],
-      ],
-    ];
+        ];
         $params = array();
         $params['index'] = $this->getIndexName();
         $params['body'] = $query;

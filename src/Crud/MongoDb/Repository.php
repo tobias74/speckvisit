@@ -197,9 +197,9 @@ class Repository
         return $this->getOneBySpecification($criteria);
     }
 
-    public function getAll()
+    public function getAll($options=[])
     {
-        $mongoCursor = $this->getCollection()->find();
+        $mongoCursor = $this->getCollection()->find([], $options);
         $iterator = new EntityIterator($mongoCursor, $this->getMapper());
 
         return $iterator;
