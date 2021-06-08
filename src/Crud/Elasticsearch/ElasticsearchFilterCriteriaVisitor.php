@@ -62,6 +62,14 @@ class ElasticsearchFilterCriteriaVisitor
         $this->setArrayForCriteria($criteria, $comp);
     }
 
+
+    public function visitWildcardCriteria($criteria)
+    {
+        $column = $this->getMapper()->getColumnForField($criteria->getField());
+        $comp = array('wildcard' => array($column => $criteria->getValue()));
+        $this->setArrayForCriteria($criteria, $comp);
+    }
+
     public function visitTermsCriteria($criteria)
     {
         $column = $this->getMapper()->getColumnForField($criteria->getField());

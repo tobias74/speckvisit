@@ -14,6 +14,11 @@ class CriteriaMaker
         return new MatchCriteria($field, $value);
     }
 
+    public function wildcard($field, $value)
+    {
+        return new WildcardCriteria($field, $value);
+    }
+
     public function terms($field, $value)
     {
         return new TermsCriteria($field, $value);
