@@ -93,6 +93,11 @@ class CriteriaMaker
     {
         return new NotNullCriteria($field);
     }
+    
+    public function exists($field)
+    {
+        return new ExistsCriteria($field);
+    }
 
     public function any()
     {
@@ -109,4 +114,10 @@ class CriteriaMaker
     {
         return $this->equals('id', $id);
     }
+    
+    public function not($criteria)
+    {
+        return new NotCriteria($criteria);    
+    }
+    
 }

@@ -19,10 +19,10 @@ class ElasticsearchFilterCriteriaVisitor
     public function visitAnyCriteria($anyCriteria)
     {
         $whereArray = array(
-      'bool' => array(
-        'must' => array(),
-      ),
-    );
+          'bool' => array(
+            'must' => array(),
+          ),
+        );
         $this->setArrayForCriteria($anyCriteria, $whereArray);
     }
 
@@ -32,10 +32,10 @@ class ElasticsearchFilterCriteriaVisitor
         $secondArray = $this->getArrayForCriteria($andCriteria->getSecondCriteria());
 
         $whereArray = array(
-      'bool' => array(
-        'must' => array($firstArray, $secondArray),
-      ),
-    );
+          'bool' => array(
+            'must' => array($firstArray, $secondArray),
+          ),
+        );
 
         $this->setArrayForCriteria($andCriteria, $whereArray);
     }
@@ -46,11 +46,11 @@ class ElasticsearchFilterCriteriaVisitor
         $secondArray = $this->getArrayForCriteria($orCriteria->getSecondCriteria());
 
         $whereArray = array(
-      'bool' => array(
-        'should' => array($firstArray, $secondArray),
-        'minimum_should_match' => 1,
-      ),
-    );
+          'bool' => array(
+            'should' => array($firstArray, $secondArray),
+            'minimum_should_match' => 1,
+          ),
+        );
 
         $this->setArrayForCriteria($orCriteria, $whereArray);
     }
@@ -69,7 +69,7 @@ class ElasticsearchFilterCriteriaVisitor
         $comp = array('wildcard' => array($column => $criteria->getValue()));
         $this->setArrayForCriteria($criteria, $comp);
     }
-
+    
     public function visitTermsCriteria($criteria)
     {
         $column = $this->getMapper()->getColumnForField($criteria->getField());

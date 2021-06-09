@@ -6,6 +6,7 @@ class ElasticSearchService
 {
     protected $mapper;
     protected $config;
+    protected $client;
 
     public function __construct($config, $mapper)
     {
@@ -98,25 +99,27 @@ class ElasticSearchService
 
     protected function getClient()
     {
-        $hosts = [
-          $this->getConfig()['elasticSearchHost'],
-        ];
-
-        $clientBuilder = \Elasticsearch\ClientBuilder::create();
-        $clientBuilder->setHosts($hosts);
-        $clientBuilder->setConnectionPool(\Elasticsearch\ConnectionPool\StaticConnectionPool::class);
-
-        if (isset($this->getConfig()['elasticSearchCloudId'])) {
-            $clientBuilder->setElasticCloudId($this->getConfig()['elasticSearchCloudId']);
+        if (!$this->client) {
+            $hosts = [
+              $this->getConfig()['elasticSearchHost'],
+            ];
+    
+            $clientBuilder = \Elasticsearch\ClientBuilder::create();
+            $clientBuilder->setHosts($hosts);
+            $clientBuilder->setConnectionPool(\Elasticsearch\ConnectionPool\StaticConnectionPool::class);
+    
+            if (isset($this->getConfig()['elasticSearchCloudId'])) {
+                $clientBuilder->setElasticCloudId($this->getConfig()['elasticSearchCloudId']);
+            }
+    
+            if (isset($this->getConfig()['elasticSearchUserName'])) {
+                $clientBuilder->setBasicAuthentication($this->getConfig()['elasticSearchUserName'], $this->getConfig()['elasticSearchPassword']);
+            }
+    
+            $this->client = $clientBuilder->build();
         }
 
-        if (isset($this->getConfig()['elasticSearchUserName'])) {
-            $clientBuilder->setBasicAuthentication($this->getConfig()['elasticSearchUserName'], $this->getConfig()['elasticSearchPassword']);
-        }
-
-        $client = $clientBuilder->build();
-
-        return $client;
+        return $this->client;
     }
 
     public function createIndex()
