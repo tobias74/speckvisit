@@ -181,6 +181,16 @@ class Repository
         $this->getCollection()->updateOne(array('id' => $entity->getId()), array('$set' => $document), array('upsert' => true));
     }
 
+    public function insertMany($entities)
+    {
+        $documents = [];
+        foreach($entities as $entity) {
+            $documents[] = $this->mapToDocument($entity);
+        }
+        $dbName = $this->getMongoDbName();
+        $this->getCollection()->insertMany($documents);
+    }
+
     public function delete($entity)
     {
         $dbName = $this->getMongoDbName();
