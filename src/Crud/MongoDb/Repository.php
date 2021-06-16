@@ -185,6 +185,10 @@ class Repository
     {
         $documents = [];
         foreach($entities as $entity) {
+            if (false == $entity->getId()) {
+                $entity->setId($this->getIdPrefix().$this->getUniqueId());
+            }
+            
             $documents[] = $this->mapToDocument($entity);
         }
         $dbName = $this->getMongoDbName();

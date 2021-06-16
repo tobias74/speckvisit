@@ -416,4 +416,17 @@ class ElasticSearchService
     {
         return $this->getMapper()->getColumnForField($field);
     }
+    
+    public function putSettings($settings)
+    {
+        $params = [
+            'index' => $this->getIndexName(),
+            'body' => [
+                'settings' => $settings
+            ]
+        ];
+        
+        $response = $this->getClient()->indices()->putSettings($params);
+
+    }
 }
